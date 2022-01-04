@@ -1,5 +1,5 @@
 {
-  "name": "@kduffie/bridge-engine",
+  "name": "bridge-engine",
   "version": "0.1.0",
   "description": "A typescript library for running bridge games using robots or interactively",
   "main": "dist/run/sample.js",
