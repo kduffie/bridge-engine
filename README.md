@@ -56,6 +56,11 @@ Board 1 VUL:both Dealer:S
   Score: -100
 ```
 
+## Development
+
+This package is built on top of Node.js and written entirely in Typescript.  After cloning
+the package, you can adapt it to suit your needs.  If you use Node and VSCode, after opening the
+package, you should be able to run and debug it without additional work.
 
 ## Options
 
@@ -176,6 +181,6 @@ The bidding system works like this:
 - after NT followed by 3 of a minor, if you have 3+ cards in that suit, bid 3NT
 - after minor suit open followed by 3 of a major, if you have 3+ cards in that major, bid game in that suit, otherwise 3NT
 ### Overcalls:
-For all bids (including opening), if there is interference, proceed with bid from above unless it is insufficient, in which case you will pass
+- For all bids (including opening), if there is interference, proceed with bid from above unless it is insufficient, in which case you will pass
 
 
