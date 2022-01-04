@@ -1,0 +1,37 @@
+{
+  "name": "@kduffie/bridge-engine",
+  "version": "0.1.0",
+  "description": "A typescript library for running bridge games using robots or interactively",
+  "main": "dist/run/sample.js",
+  "module": "dist/lib.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "run": "node --inspect dist/run/sample.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kduffie/bridge-engine.git"
+  },
+  "author": "Kingston Duffie <kingston.duffie@gmail.com> (http://slickstream.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kduffie/bridge-engine/issues"
+  },
+  "homepage": "https://twoclubs.com",
+  "dependencies": {
+    "assert": "^2.0.0",
+    "random-seed": "^0.3.0",
+    "shuffle-array": "^1.0.1",
+    "sprintf-js": "^1.1.2",
+    "utils-pad-string": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/prompt": "^1.1.2",
+    "@types/random-seed": "^0.3.3",
+    "@types/node": "^16.3.3",
+    "@types/shuffle-array": "^1.0.2",
+    "@types/sprintf-js": "^1.1.2",
+    "@types/uuid": "^8.3.3",
+    "typescript": "^4.5.4"
+  }
+}
