@@ -177,10 +177,12 @@ The bidding system works like this:
 - in response to a minor without a 5+ card major but sufficient combined HCP, bid 3NT
 - otherwise pass
 ### Subsequent Response:
-- after NT followed by 3 of a major, if you have 2+ cards in that suit, bid game in that suit
-- after NT followed by 3 of a minor, if you have 3+ cards in that suit, bid 3NT
-- after minor suit open followed by 3 of a major, if you have 3+ cards in that major, bid game in that suit, otherwise 3NT
+- after opening in NT and a response of 3 of a major, if you have 2+ cards in that suit, bid game in that suit
+- after opening in NT and a response of 3 of a minor, if you have 3+ cards in that suit, bid 3NT
+- after opening a minor suit and a response of 3 of a major, if you have 3+ cards in that major, bid game in that suit, otherwise 3NT
 ### Overcalls:
 - For all bids (including opening), if there is interference, proceed with bid from above unless it is insufficient, in which case you will pass
+- Note:  You might worry that opponents can easily defeat this system with simple interference.  But because bids 
+tend to be as large as feasible, opponents don't often get "free bids" without risking penalties.
 
 
