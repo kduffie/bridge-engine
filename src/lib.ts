@@ -9,6 +9,7 @@ export * from './contract-assigner';
 export * from './contract';
 export * from './convention-card';
 export * from './hand';
+export * from './hand-evaluation';
 export * from './lib';
 export * from './play';
 export * from './random-generator';

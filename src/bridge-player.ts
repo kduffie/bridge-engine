@@ -1,4 +1,4 @@
-import { Bid } from "./bid";
+import { Bid, BidWithSeat } from "./bid";
 import { Card } from "./card";
 import { BidContext, BoardContext, FinalBoardContext, PlayContext, randomlySelect, Seat } from "./common";
 import { Contract } from "./contract";
@@ -10,6 +10,9 @@ export interface BridgeBidder {
   conventionCard: ConventionCard;
   acceptConventions(conventionCard: ConventionCard): boolean;
   startBoard: (context: BoardContext) => Promise<void>;
+  onBidFromLHO: (context: BidContext, bid: BidWithSeat) => Promise<void>;
+  onBidFromPartner: (context: BidContext, bid: BidWithSeat) => Promise<void>;
+  onBidFromRHO: (context: BidContext, bid: BidWithSeat) => Promise<void>;
   bid: (context: BidContext, hand: Hand) => Promise<Bid>;
   finalizeContract: (context: BidContext, contract: Contract | null) => Promise<void>;
 }
@@ -39,6 +42,16 @@ export class BridgePlayerBase implements IBridgePlayer {
   }
 
   async startBoard(context: BoardContext): Promise<void> {
+    // available for derived implementation
+  }
+
+  async onBidFromLHO(context: BidContext, bid: BidWithSeat): Promise<void> {
+    // available for derived implementation
+  }
+  async onBidFromPartner(context: BidContext, bid: BidWithSeat): Promise<void> {
+    // available for derived implementation
+  }
+  async onBidFromRHO(context: BidContext, bid: BidWithSeat): Promise<void> {
     // available for derived implementation
   }
 
@@ -99,6 +112,16 @@ export class BridgePlayer extends BridgePlayerBase {
 
   get conventionCard(): ConventionCard {
     return this._bidder.conventionCard;
+  }
+
+  async onBidFromLHO(context: BidContext, bid: BidWithSeat): Promise<void> {
+    return this._bidder.onBidFromLHO(context, bid);
+  }
+  async onBidFromPartner(context: BidContext, bid: BidWithSeat): Promise<void> {
+    return this._bidder.onBidFromPartner(context, bid);
+  }
+  async onBidFromRHO(context: BidContext, bid: BidWithSeat): Promise<void> {
+    return this._bidder.onBidFromRHO(context, bid);
   }
 
   async bid(context: BidContext, hand: Hand): Promise<Bid> {

@@ -45,9 +45,8 @@ export class Trick {
     this.plays.push(play);
     if (this.plays.length === SEATS.length) {
       return this.determineWinner();
-    } else {
-      return null;
     }
+    return null;
   }
 
   getLeadSuit(): Suit | null {

@@ -1,5 +1,6 @@
 import { Card } from "./card";
-import { CardRank, CARD_RANKS, getCardsInSuit, sortCards, Suit, SUITS, SUITS_REVERSE } from "./common";
+import { Suit, SUITS, SUITS_REVERSE } from "./common";
+// eslint-disable-next-line no-undef
 const pad = require('utils-pad-string');
 import * as assert from 'assert';
 import { CardSuit } from "./card-suit";
@@ -51,7 +52,7 @@ export class CardSet {
   get highCardPoints(): number {
     let result = 0;
     for (const s of this._suits.values()) {
-      result += s.highCardPoints
+      result += s.highCardPoints;
     }
     return result;
   }
@@ -105,9 +106,8 @@ export class CardSet {
       } else if (s.length === 2) {
         if (doubletonFound) {
           return false;
-        } else {
-          doubletonFound = true;
         }
+        doubletonFound = true;
       }
     }
     return true;
@@ -124,6 +124,28 @@ export class CardSet {
       }
     }
     return lowest;
+  }
+
+  areAllSuitsStopped(except?: Suit): boolean {
+    for (const s of this._suits.values()) {
+      if (!except || s.suit !== except) {
+        if (!s.isStopped()) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  areAllSuitsWellStopped(except?: Suit): boolean {
+    for (const s of this._suits.values()) {
+      if (!except || s.suit !== except) {
+        if (!s.isWellStopped()) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   getStoppedSuits(): Set<Suit> {
@@ -168,32 +190,59 @@ export class CardSet {
   }
 
   getBestSuit(): CardSuit {
-    const major = this.getBestMajorSuit();
-    const minor = this.getBestMinorSuit();
+    const major = this.getBestMajorSuit('prefer-better');
+    const minor = this.getBestMinorSuit('prefer-better');
     if (major.isBetter(minor)) {
       return major;
-    } else {
-      return minor;
     }
+    return minor;
   }
 
-  getBestMajorSuit(): CardSuit {
+  getBestMajorSuit(suitPreference: SuitPreference): CardSuit {
     const spades = this.getSuit('S');
     const hearts = this.getSuit('H');
-    if (hearts.isBetter(spades)) {
-      return hearts;
-    } else {
+    if (spades.length > hearts.length) {
       return spades;
+    } else if (spades.length < hearts.length) {
+      return hearts;
+    }
+    switch (suitPreference) {
+      case 'S':
+        return spades;
+      case 'H':
+        return hearts;
+      case 'prefer-better':
+        return spades.isBetter(hearts) ? spades : hearts;
+      case 'prefer-higher':
+        return spades;
+      case 'prefer-lower':
+        return hearts;
+      default:
+        throw new Error(`Unhandled suit preference ${suitPreference}`);
     }
   }
 
-  getBestMinorSuit(): CardSuit {
-    const clubs = this.getSuit('C');
+  getBestMinorSuit(suitPreference: SuitPreference): CardSuit {
     const diamonds = this.getSuit('D');
-    if (diamonds.isBetter(clubs)) {
+    const clubs = this.getSuit('C');
+    if (diamonds.length > clubs.length) {
       return diamonds;
-    } else {
+    } else if (diamonds.length < clubs.length) {
       return clubs;
+    }
+    switch (suitPreference) {
+      case 'D':
+        return diamonds;
+      case 'C':
+        return clubs;
+      case 'prefer-better':
+        return diamonds.isBetter(clubs) ? diamonds : clubs;
+      case 'prefer-higher':
+        return diamonds;
+      case 'prefer-lower':
+        return clubs;
+      default:
+        throw new Error(`Unhandled suit preference ${suitPreference}`);
     }
   }
 
@@ -205,7 +254,8 @@ export class CardSet {
       result.push(padded);
     }
     const cards = result.join(' ');
-    return cards + (includePoints ? (` ${this.highCardPoints < 10 ? ' ' : ''}(${this.highCardPoints} ${this.totalPoints < 10 ? ' ' : ''}${this.totalPoints})  `) : '');
+    return cards + (includePoints ? ` ${this.highCardPoints < 10 ? ' ' : ''}(${this.highCardPoints} ${this.totalPoints < 10 ? ' ' : ''}${this.totalPoints})  ` : '');
   }
-
 }
+
+export type SuitPreference = 'prefer-lower' | 'prefer-higher' | 'prefer-better' | Suit;

@@ -18,12 +18,14 @@ export async function defaultContractAssigner(board: Board, randomGenerator: Ran
   }
   const nsTotal = nHand.allCards.totalPoints + sHand.allCards.totalPoints;
   const ewTotal = eHand.allCards.totalPoints + wHand.allCards.totalPoints;
-  let partnership: Partnership = nsTotal === ewTotal ? randomlySelect(PARTNERSHIPS, randomGenerator) : (nsTotal > ewTotal ? 'NS' : 'EW');
+  let partnership: Partnership = nsTotal === ewTotal ? randomlySelect(PARTNERSHIPS, randomGenerator) : nsTotal > ewTotal ? 'NS' : 'EW';
   switch (partnership) {
     case 'NS':
       return chooseContract('NS', board.isPartnershipVulnerable('NS'), nHand, sHand, board);
     case 'EW':
       return chooseContract('EW', board.isPartnershipVulnerable('EW'), eHand, wHand, board);
+    default:
+      throw new Error("Unexpected partnership");
   }
 }
 
@@ -41,7 +43,7 @@ function chooseContract(partnership: Partnership, vulnerable: boolean, hand1: Ha
   const wellStoppedSuitsInNT = union(hand1.allCards.getWellStoppedSuits(), hand2.allCards.getWellStoppedSuits());
   const slamStoppedSuitsInNT = union(hand1.allCards.getFirstOrSecondRoundStoppedSuits(false), hand2.allCards.getFirstOrSecondRoundStoppedSuits(false));
   const slamStoppedSuitsInSuit = union(hand1.allCards.getFirstOrSecondRoundStoppedSuits(true), hand2.allCards.getFirstOrSecondRoundStoppedSuits(true));
-  const bestFit: Suit = spades === longestFit ? 'S' : (hearts === longestFit ? 'H' : (diamonds === longestFit ? 'D' : 'C'));
+  const bestFit: Suit = spades === longestFit ? 'S' : hearts === longestFit ? 'H' : diamonds === longestFit ? 'D' : 'C';
   const bestMajorSuitFit: Suit = spades >= hearts ? 'S' : 'H';
   const bestMinorSuitFit: Suit = diamonds > clubs ? 'D' : 'C';
 

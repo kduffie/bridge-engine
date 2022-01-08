@@ -1,4 +1,4 @@
-import { BidType, MAX_CONTRACT_SIZE, Seat, Strain, STRAINS } from "./common";
+import { BidType, CARD_RANKS, MAX_CONTRACT_SIZE, Seat, Strain, STRAINS } from "./common";
 import * as assert from 'assert';
 
 export const BID_PATTERN = /^(pass)|(dbl)|rdbl?|([1-7](c|d|h|s|nt?))$/i;
@@ -6,17 +6,19 @@ export class Bid {
   private _type: BidType;
   private _count?: number;
   private _strain?: Strain;
+  private _description: string | null;
 
-  constructor(_type: BidType, count?: number, strain?: Strain,) {
+  constructor(_type: BidType, count?: number, strain?: Strain, description?: string | null) {
     this._type = _type;
     if (_type === 'normal') {
-      assert(count && count > 0 && count <= MAX_CONTRACT_SIZE)
+      assert(count && count > 0 && count <= MAX_CONTRACT_SIZE);
       assert(strain);
       this._count = count;
       this._strain = strain;
     } else {
       assert(!count && !strain, 'Count and strain not appropriate for this type of bid');
     }
+    this._description = description || null;
   }
 
   static parse(value: string): Bid {
@@ -29,7 +31,7 @@ export class Bid {
         case 'rdb':
         case 'rdbl':
           return new Bid('redouble');
-        default:
+        default: {
           const count = Number(value.charAt(0));
           switch (value.toLowerCase().charAt(1)) {
             case 'c':
@@ -43,20 +45,32 @@ export class Bid {
             case 'n':
               return new Bid('normal', count, 'N');
             default:
-              throw new Error("Unhandled bid " + value);
+              throw new Error(`Unhandled bid ${value}`);
           }
+        }
       }
     } else {
-      throw new Error("Unrecognized bid " + value);
+      throw new Error(`Unrecognized bid ${value}`);
     }
+  }
+
+  static createSufficient(other: Bid, strain: Strain, description?: string | null): Bid | null {
+    assert(other.type === 'normal');
+    let sufficientLevel = other.count;
+    if (STRAINS.indexOf(other.strain) >= STRAINS.indexOf(strain)) {
+      sufficientLevel++;
+    }
+    if (sufficientLevel > 7) {
+      return null;
+    }
+    return new Bid('normal', sufficientLevel, strain, description);
   }
 
   is(count: number, strain: Strain): boolean {
     if (this.type === 'normal') {
       return this.count === count && this.strain === strain;
-    } else {
-      return false;
     }
+    return false;
   }
 
   get type(): BidType {
@@ -72,6 +86,10 @@ export class Bid {
     return this._strain!;
   }
 
+  get description(): string | null {
+    return this._description;
+  }
+
   isLarger(bid: Bid | null): boolean {
     if (!bid) {
       return true;
@@ -82,7 +100,7 @@ export class Bid {
     if (this.type !== 'normal') {
       return false;
     }
-    return this.count > bid.count || (this.count === bid.count && STRAINS.indexOf(this.strain) > STRAINS.indexOf(bid.strain));
+    return this.count > bid.count || this.count === bid.count && STRAINS.indexOf(this.strain) > STRAINS.indexOf(bid.strain);
   }
 
   isGameBonusApplicable(): boolean {
@@ -96,6 +114,8 @@ export class Bid {
           return this.count >= 4;
         case 'N':
           return this.count >= 3;
+        default:
+          throw new Error("Unhandled strain");
       }
     } else {
       return false;
@@ -115,6 +135,8 @@ export class Bid {
         return this.type;
       case 'normal':
         return `${this.count}${this.strain}`;
+      default:
+        throw new Error("Unhandled type");
     }
   }
 }
@@ -133,8 +155,7 @@ export class BidWithSeat extends Bid {
   toString(includeBy?: boolean): string {
     if (includeBy) {
       return `${super.toString()} by ${this.by}`;
-    } else {
-      return super.toString();
     }
+    return super.toString();
   }
 }

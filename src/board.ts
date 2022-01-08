@@ -48,7 +48,7 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
     }
     let seat = getSeatFollowing(dealer);
     for (const index of cardIndexes) {
-      hands.get(seat)!.dealCard(new Card(CARD_RANKS[index % CARD_RANKS.length], SUITS[Math.floor(index / CARD_RANKS.length)]))
+      hands.get(seat)!.dealCard(new Card(CARD_RANKS[index % CARD_RANKS.length], SUITS[Math.floor(index / CARD_RANKS.length)]));
       seat = getSeatFollowing(seat);
     }
     return new Board(id, vulnerability, dealer, hands, randomGenerator);
@@ -91,7 +91,7 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
   }
 
   get auction(): Auction {
-    return new Auction(this._bids);
+    return new Auction(this._vulnerability, this._bids);
   }
 
   get completedTricks(): Trick[] {
@@ -174,16 +174,14 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
       return null;
     } else if (this.tricks.length > 1 && this.tricks[this.tricks.length - 1].plays.length === 0) {
       return this.tricks[this.tricks.length - 2].getNextPlayer();
-    } else {
-      const lastTrick = this.tricks[this.tricks.length - 1];
-      if (lastTrick.winner) {
-        return lastTrick.winner.by;
-      } else if (lastTrick.plays.length > 0) {
-        return lastTrick.getNextPlayer()
-      } else {
-        return getSeatFollowing(this.contract.declarer);
-      }
     }
+    const lastTrick = this.tricks[this.tricks.length - 1];
+    if (lastTrick.winner) {
+      return lastTrick.winner.by;
+    } else if (lastTrick.plays.length > 0) {
+      return lastTrick.getNextPlayer();
+    }
+    return getSeatFollowing(this.contract.declarer);
   }
 
   getHand(seat: Seat): Hand {
@@ -192,11 +190,30 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
     return result;
   }
 
-  bid(bid: BidWithSeat): boolean {
+  isSeatFirstBidBefore(seat1: Seat, seat2: Seat): boolean {
+    if (seat1 === seat2) {
+      return false;
+    }
+    let seat = this.dealer;
+    for (let i = 0; i < 4; i++) {
+      if (seat === seat1) {
+        return true;
+      } else if (seat === seat2) {
+        return false;
+      }
+      seat = getSeatFollowing(seat);
+    }
+    throw new Error("Unexpected finish without seat found");
+  }
+
+  bid(bid: BidWithSeat): void {
     assert(this._contract === null);
     assert(this.status === 'bidding');
     assert(this.isLegalFollowing(bid));
     this.bids.push(bid);
+  }
+
+  checkForCompletion(): boolean {
     if (this.bids.length >= 4) {
       if (this.bids[this._bids.length - 1].type === 'pass' &&
         this.bids[this._bids.length - 2].type === 'pass' &&
@@ -225,30 +242,29 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
         return true;
       case 'normal': {
         const lastNormal = this.getLastNormalBid();
-        return (!lastNormal || lastNormal && bid.isLarger(lastNormal)) ? true : false;
+        return !lastNormal || lastNormal && bid.isLarger(lastNormal);
       }
       case 'double': {
         if (this.bids.length === 0) {
           return false;
-        } else {
-          switch (this.bids[this.bids.length - 1].type) {
-            case 'pass': {
-              if (this.bids.length < 3) {
-                return false;
-              }
-              if (this.bids[this.bids.length - 2].type !== 'pass') {
-                return false;
-              }
-              return this.bids[this.bids.length - 3].type === 'normal';
-            }
-            case 'normal':
-              return true;
-            case 'double':
-            case 'redouble':
+        }
+        switch (this.bids[this.bids.length - 1].type) {
+          case 'pass': {
+            if (this.bids.length < 3) {
               return false;
-            default:
-              throw new Error("Unexpected type");
+            }
+            if (this.bids[this.bids.length - 2].type !== 'pass') {
+              return false;
+            }
+            return this.bids[this.bids.length - 3].type === 'normal';
           }
+          case 'normal':
+            return true;
+          case 'double':
+          case 'redouble':
+            return false;
+          default:
+            throw new Error("Unexpected type");
         }
       }
       case 'redouble': {
@@ -276,7 +292,7 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
         }
       }
       default:
-        throw new Error("Unexpected type " + bid.type);
+        throw new Error(`Unexpected type ${bid.type}`);
     }
   }
 
@@ -295,6 +311,8 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
         return partnership === 'NS';
       case 'EW':
         return partnership === 'EW';
+      default:
+        throw new Error("Unhandled vulnerability");
     }
   }
 
@@ -308,6 +326,8 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
         return ['N', 'S'].indexOf(seat) >= 0;
       case 'EW':
         return ['E', 'W'].indexOf(seat) >= 0;
+      default:
+        throw new Error("Unhandled vulnerability");
     }
   }
 
@@ -332,6 +352,10 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
     return this.tricks[this.tricks.length - 1];
   }
 
+  private ensureTrick(): Trick | null {
+    return this.currentTrick;
+  }
+
   playCard(p: Play): boolean {
     assert(this.contract);
     assert(this.status === 'play');
@@ -343,7 +367,7 @@ export class Board implements FinalBoardContext, BidContext, PlayContext {
     if (p.by !== nextPlayer) {
       throw new Error("Incorrect person trying to play");
     }
-    this.currentTrick;
+    this.ensureTrick();
     const hand = this.getHand(p.by);
     assert(hand);
     hand.playCard(p.card);

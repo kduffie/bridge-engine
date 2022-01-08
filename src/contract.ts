@@ -66,11 +66,10 @@ export class Contract {
       result += this.getGameBonus(tricksMade);
       result += this.getSlamBonus(tricksMade);
       return result;
-    } else {
-      const undertricks = (this.count + 6) - tricksMade;
-      const penalty = this.getUnderTrickScore(undertricks);
-      return -penalty;
     }
+    const undertricks = this.count + 6 - tricksMade;
+    const penalty = this.getUnderTrickScore(undertricks);
+    return -penalty;
   }
 
   isGameBonusApplicable(): boolean {
@@ -84,7 +83,7 @@ export class Contract {
       case 'N':
         return this.count >= 3;
       default:
-        throw new Error("Unexpected strain " + this._strain);
+        throw new Error(`Unexpected strain ${this._strain}`);
     }
   }
 
@@ -106,9 +105,9 @@ export class Contract {
         minCount += 3;
         break;
       default:
-        throw new Error("Unexpected strain " + this._strain);
+        throw new Error(`Unexpected strain ${this._strain}`);
     }
-    return tricksMade >= minCount ? (this.vulnerable ? 500 : 300) : 0;
+    return tricksMade >= minCount ? this.vulnerable ? 500 : 300 : 0;
   }
 
   getApplicableSlam(): SlamType {
@@ -116,9 +115,8 @@ export class Contract {
       return 'grand';
     } else if (this.count === 6) {
       return 'small';
-    } else {
-      return 'none';
     }
+    return 'none';
   }
 
   private getSlamBonus(tricksMade: number): number {
@@ -127,9 +125,11 @@ export class Contract {
       case 'none':
         return 0;
       case 'small':
-        return tricksMade >= 12 ? (this.vulnerable ? 750 : 500) : 0;
+        return tricksMade >= 12 ? this.vulnerable ? 750 : 500 : 0;
       case 'grand':
-        return tricksMade >= 13 ? (this.vulnerable ? 1500 : 1000) : 0;
+        return tricksMade >= 13 ? this.vulnerable ? 1500 : 1000 : 0;
+      default:
+        throw new Error("Unexpected slam type");
     }
   }
 
@@ -162,6 +162,8 @@ export class Contract {
         return (this.vulnerable ? 200 : 100) * overtricks;
       case 'redoubled':
         return (this.vulnerable ? 400 : 200) * overtricks;
+      default:
+        throw new Error("Unexpected doubling type");
     }
   }
 
@@ -178,6 +180,8 @@ export class Contract {
           return 200 + (undertricks > 1 ? 300 : 0) + (undertricks > 2 ? 300 : 0) + (undertricks > 3 ? (undertricks - 3) * 300 : 0);
         case 'redoubled':
           return 400 + (undertricks > 1 ? 600 : 0) + (undertricks > 2 ? 600 : 0) + (undertricks > 3 ? (undertricks - 3) * 600 : 0);
+        default:
+          throw new Error("Unexpected doubling type");
       }
     } else {
       switch (this._doubling) {
@@ -187,11 +191,13 @@ export class Contract {
           return 100 + (undertricks > 1 ? 200 : 0) + (undertricks > 2 ? 200 : 0) + (undertricks > 3 ? (undertricks - 3) * 300 : 0);
         case 'redoubled':
           return 200 + (undertricks > 1 ? 400 : 0) + (undertricks > 2 ? 400 : 0) + (undertricks > 3 ? (undertricks - 3) * 600 : 0);
+        default:
+          throw new Error("Unexpected doubling type");
       }
     }
   }
 
   toString(): string {
-    return `${this._count}${this._strain}${this.doubling === 'doubled' ? '*' : (this.doubling === 'redoubled' ? '**' : '')} by ${this._declarer} ${this._vulnerable ? 'VUL' : 'nonVUL'}`;
+    return `${this._count}${this._strain}${this.doubling === 'doubled' ? '*' : this.doubling === 'redoubled' ? '**' : ''} by ${this._declarer} ${this._vulnerable ? 'VUL' : 'nonVUL'}`;
   }
 }

@@ -59,6 +59,13 @@ export class BbsBidder implements BridgeBidder {
     // noop
   }
 
+  async onBidFromLHO(context: BidContext, bid: BidWithSeat): Promise<void> {
+  }
+  async onBidFromPartner(context: BidContext, bid: BidWithSeat): Promise<void> {
+  }
+  async onBidFromRHO(context: BidContext, bid: BidWithSeat): Promise<void> {
+  }
+
   async bid(context: BidContext, hand: Hand): Promise<Bid> {
     let result: Bid | null = null;
     const myBids = context.auction.getBidsBySeat(this.seat, true);
@@ -84,8 +91,8 @@ export class BbsBidder implements BridgeBidder {
   }
 
   private getOpeningBid(context: BidContext, hand: Hand): Bid {
-    const bestMajor = hand.allCards.getBestMajorSuit();
-    const bestMinor = hand.allCards.getBestMinorSuit();
+    const bestMajor = hand.allCards.getBestMajorSuit('prefer-higher');
+    const bestMinor = hand.allCards.getBestMinorSuit('prefer-lower');
     const bestSuit = hand.allCards.getBestSuit();
     if (hand.allCards.highCardPoints >= 23 && hand.allCards.hasNtDistribution() && hand.allCards.getWellStoppedSuits().size == 4) {
       return new Bid('normal', 3, 'N');
@@ -161,7 +168,7 @@ export class BbsBidder implements BridgeBidder {
     const partnerMinTotal = opening.count === 3 ? 19 : (opening.count === 2 ? 16 : 13);
     const combined = partnerMinTotal + hand.allCards.totalPoints;
     if (combined >= 24) {
-      const bestMajor = hand.allCards.getBestMajorSuit();
+      const bestMajor = hand.allCards.getBestMajorSuit('prefer-lower');
       if (bestMajor.length >= 5) {
         return new Bid('normal', 3, bestMajor.suit);
       } else {

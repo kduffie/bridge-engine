@@ -4,6 +4,7 @@ import * as assert from 'assert';
 import { CardRank, cardsInclude, CARDS_PER_HAND, CARD_RANKS, sortCards, Suit, SUITS } from "./common";
 import { CardSet } from "./card-set";
 import { CardSuit } from "./card-suit";
+// eslint-disable-next-line no-undef
 const pad = require('utils-pad-string');
 
 export class Hand {
@@ -40,12 +41,10 @@ export class Hand {
       const s = this.unplayed.getSuit(lead);
       if (s.length === 0) {
         return this.unplayed;
-      } else {
-        return new CardSet(s.cards);
       }
-    } else {
-      return this.unplayed;
+      return new CardSet(s.cards);
     }
+    return this.unplayed;
   }
 
   ensureEligibleToPlay(card: Card, lead: Suit | null): Card {

@@ -34,9 +34,7 @@ export class CardSuit {
   }
 
   private sort(): void {
-    this._ranks.sort((a, b) => {
-      return CARD_RANKS.indexOf(b) - CARD_RANKS.indexOf(a);
-    });
+    this._ranks.sort((a, b) => CARD_RANKS.indexOf(b) - CARD_RANKS.indexOf(a));
   }
 
 
@@ -82,6 +80,9 @@ export class CardSuit {
           break;
         case 'J':
           result += 1;
+          break;
+        default:
+          break;
       }
     }
     return result;
@@ -98,6 +99,8 @@ export class CardSuit {
         break;
       case 0:
         result += 3;
+        break;
+      default:
         break;
     }
     return result;
@@ -150,32 +153,31 @@ export class CardSuit {
     if (this.length > other.length) {
       return 1;
     } else if (this.length < other.length) {
-      return -1
-    } else {
-      return this.highCardPoints - other.highCardPoints;
+      return -1;
     }
+    return this.highCardPoints - other.highCardPoints;
   }
 
   isStopped(): boolean {
     const l = this.length;
     return l >= 5 || this.includes('A') ||
-      (this.includes('K') && l >= 2) ||
-      (this.includes('Q') && l >= 3) ||
-      (this.includes('J') && l >= 4);
+      this.includes('K') && l >= 2 ||
+      this.includes('Q') && l >= 3 ||
+      this.includes('J') && l >= 4;
   }
 
   isWellStopped(): boolean {
     const l = this.length;
     return l >= 6 || this.includes('A', 'K') ||
-      (this.includes('A', 'Q') && l >= 3) ||
-      (this.includes('A', 'J') && l >= 4) ||
-      (this.includes('K', 'Q') && l >= 4) ||
-      (this.includes('K', 'J') && l >= 4) ||
-      (this.includes('Q', 'J') && l >= 4) ||
-      (this.includes('A') && l >= 5) ||
-      (this.includes('K') && l >= 5) ||
-      (this.includes('Q') && l >= 5) ||
-      (this.includes('J') && l >= 5);
+      this.includes('A', 'Q') && l >= 3 ||
+      this.includes('A', 'J') && l >= 4 ||
+      this.includes('K', 'Q') && l >= 4 ||
+      this.includes('K', 'J') && l >= 4 ||
+      this.includes('Q', 'J') && l >= 4 ||
+      this.includes('A') && l >= 5 ||
+      this.includes('K') && l >= 5 ||
+      this.includes('Q') && l >= 5 ||
+      this.includes('J') && l >= 5;
   }
 
   hasFirstRoundStopper(includeVoid: boolean): boolean {
@@ -189,7 +191,7 @@ export class CardSuit {
     if (includeVoid && this.length < 2) {
       return true;
     }
-    return this.includes('A') || (this.length >= 2 && this.includes('K'));
+    return this.includes('A') || this.length >= 2 && this.includes('K');
   }
 
   includes(...ranks: CardRank[]): boolean {
@@ -205,7 +207,7 @@ export class CardSuit {
   }
 
   toString(): string {
-    let result = this.suit + ': ';
+    let result = `${this.suit}: `;
     if (this._ranks.length === 0) {
       result += '-';
     } else {

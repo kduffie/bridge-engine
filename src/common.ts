@@ -44,7 +44,7 @@ export function getPartnerBySeat(seat: Seat): Seat {
     case 'W':
       return 'E';
     default:
-      throw new Error("Unexpected seat " + seat);
+      throw new Error(`Unexpected seat ${seat}`);
   }
 }
 
@@ -59,7 +59,7 @@ export function getSeatFollowing(seat: Seat): Seat {
     case 'W':
       return 'N';
     default:
-      throw new Error("Unexpected seat " + seat);
+      throw new Error(`Unexpected seat ${seat}`);
   }
 }
 
@@ -74,7 +74,17 @@ export function getSeatPreceding(seat: Seat): Seat {
     case 'W':
       return 'S';
     default:
-      throw new Error("Unexpected seat " + seat);
+      throw new Error(`Unexpected seat ${seat}`);
+  }
+}
+
+export function isMajor(strain: Strain): boolean {
+  switch (strain) {
+    case 'H':
+    case 'S':
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -87,7 +97,7 @@ export function getPartnershipBySeat(seat: Seat): Partnership {
     case 'W':
       return 'EW';
     default:
-      throw new Error("Unexpected seat " + seat);
+      throw new Error(`Unexpected seat ${seat}`);
   }
 }
 
@@ -97,6 +107,8 @@ export function getOpposingPartnership(partnership: Partnership): Partnership {
       return 'EW';
     case 'EW':
       return 'NS';
+    default:
+      throw new Error("Unexpected partnership");
   }
 }
 
@@ -110,6 +122,8 @@ export function getSeatName(seat: Seat): string {
       return 'South';
     case 'W':
       return 'West';
+    default:
+      throw new Error("Unexpected seat");
   }
 }
 
@@ -119,6 +133,8 @@ export function getSeatsByPartnership(partnership: Partnership): Seat[] {
       return ['N', 'S'];
     case 'EW':
       return ['E', 'W'];
+    default:
+      throw new Error("Unexpected partnership");
   }
 }
 
@@ -129,9 +145,7 @@ export function getCardsInSuit(cards: Card[], suit: Suit): Card[] {
       result.push(c);
     }
   }
-  result.sort((a, b) => {
-    return CARD_RANKS.indexOf(b.rank) - CARD_RANKS.indexOf(a.rank);
-  })
+  result.sort((a, b) => CARD_RANKS.indexOf(b.rank) - CARD_RANKS.indexOf(a.rank));
   return result;
 }
 
@@ -159,8 +173,9 @@ export interface FinalBoardContext extends BoardContext {
 
 export interface BidContext {
   board: BoardContext;
-  vulnerablePartnership: Partnership;
   auction: Auction;
+  vulnerability: Vulnerability;
+  isSeatFirstBidBefore(seat1: Seat, seat2: Seat): boolean;
 }
 
 export interface PlayContext {
@@ -207,9 +222,8 @@ export function sortCards(cards: Card[]): void {
   cards.sort((a, b) => {
     if (a.suit === b.suit) {
       return CARD_RANKS.indexOf(b.rank) - CARD_RANKS.indexOf(a.rank);
-    } else {
-      return SUITS.indexOf(b.suit) - SUITS.indexOf(a.suit);
     }
+    return SUITS.indexOf(b.suit) - SUITS.indexOf(a.suit);
   });
 }
 
@@ -220,4 +234,61 @@ export function cardsInclude(cards: Card[], card: Card): Card | null {
     }
   }
   return null;
+}
+
+export function isHigherRank(rank1: CardRank, rank2: CardRank): boolean {
+  return CARD_RANKS.indexOf(rank1) > CARD_RANKS.indexOf(rank2);
+}
+
+export function isHigherStrain(strain1: Strain, strain2: Strain): boolean {
+  return STRAINS.indexOf(strain1) > STRAINS.indexOf(strain2);
+}
+
+export function getStrainName(strain: Strain): string {
+  switch (strain) {
+    case 'N':
+      return 'NT';
+    case 'S':
+      return 'spades';
+    case 'H':
+      return 'hearts';
+    case 'D':
+      return 'diamonds';
+    case 'C':
+      return 'clubs';
+    default:
+      throw new Error("Unexpected strain");
+  }
+}
+
+export function getStrainsOtherThan(...except: Strain[]): Strain[] {
+  const result: Strain[] = [];
+  for (const strain of STRAINS) {
+    if (!except || except.indexOf(strain) < 0) {
+      result.push(strain);
+    }
+  }
+  return result;
+}
+
+export function getVulnerabilityForPartnership(vulnerability: Vulnerability, partnership: Partnership): RelativeVulnerability {
+  switch (vulnerability) {
+    case 'EW':
+      return partnership === 'EW' ? 'unfavorable' : 'favorable';
+    case 'NS':
+      return partnership === 'NS' ? 'unfavorable' : 'favorable';
+    case 'both':
+      return 'neutral-vulnerable';
+    case 'none':
+      return 'neutral-non-vulnerable';
+    default:
+      throw new Error("Unexpected vulnerability");
+  }
+}
+
+export type RelativeVulnerability = 'neutral-vulnerable' | 'neutral-non-vulnerable' | 'favorable' | 'unfavorable';
+
+export interface ValueRange {
+  from: number;
+  to: number;
 }

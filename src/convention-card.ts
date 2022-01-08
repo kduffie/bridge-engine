@@ -1,3 +1,4 @@
+import { ValueRange } from "./common";
 export class SimpleConventionCard implements ConventionCard {
   private _approach: OverallApproach;
   constructor(approach: OverallApproach) {
@@ -20,7 +21,7 @@ export interface ConventionCard {
     forcingOpening?: ForcingOpeningConvention;
   };
   noTrumpOpeningBids?: {
-    oneNT?: PointRange;
+    oneNT?: ValueRange;
     fiveCardMajorCommon?: boolean;
     systemOnOver?: string;
     twoClub?: NoTrumpTwoClubResponses;
@@ -62,9 +63,9 @@ export interface ConventionCard {
       afterOvercall?: ResponseRaiseOvercallOption[];
       forcingRaise?: MinorOpenForcingRaiseConvention;
       frequentlyBypass4PlusDiamonds?: boolean;
-      oneNT_oneClub?: PointRange;
+      oneNT_oneClub?: ValueRange;
       twoNT: MinorOpenTwoNTResponses;
-      threeNT: PointRange;
+      threeNT: ValueRange;
       other?: string;
     };
   };
@@ -87,7 +88,7 @@ export interface ConventionCard {
     description?: string;
   };
   simpleOvercall?: {
-    oneLevel: PointRange;
+    oneLevel: ValueRange;
     options?: SimpleOvercallOption[];
     responses?: {
       newSuit?: SimpleOvercallNewSuitResponseOption[];
@@ -207,11 +208,6 @@ export interface ForcingOpeningConvention {
 }
 export type ForcingOpeningConventionCases = '1c' | '2c' | 'natural-2bids' | 'other'
 
-export interface PointRange {
-  from: number;
-  to: number;
-}
-
 export interface NoTrumpTwoClubResponses {
   options?: NoTrumpTwoClubResponseOptions[];
   description?: string;
@@ -262,7 +258,7 @@ export interface NoTrumpNegativeDoubleConvention {
 }
 
 export interface TwoNoTrumpConvention {
-  points: PointRange;
+  points: ValueRange;
   puppetStayman?: boolean;
   transferResponses: TwoNoTrumpTransferResponses;
 }
@@ -273,7 +269,7 @@ export interface TwoNoTrumpTransferResponses {
 }
 
 export interface ThreeNoTrumpConvention {
-  points: PointRange;
+  points: ValueRange;
   description?: string;
 }
 export type TwoNoTrumpTransferOption = 'jacoby' | 'texas';
@@ -297,13 +293,13 @@ export type MajorResponseOneNTResponseOption = 'forcing' | 'semi-forcing';
 
 export interface MajorResponseTwoNTResponses {
   options: MajorResponseTwoNTResponseOption[];
-  points?: PointRange;
+  points?: ValueRange;
 }
 
 export type MajorResponseTwoNTResponseOption = 'forcing' | 'inv';
 
 export interface MajorResponseThreeNTResponses {
-  points: PointRange;
+  points: ValueRange;
 }
 
 export interface DruryConvention {
@@ -325,13 +321,13 @@ export type MinorOpenForcingRaiseOption = 'js-in-other-minor' | 'single-raise' |
 
 export interface MinorOpenTwoNTResponses {
   options?: MinorOpenTwoNTOption[];
-  points?: PointRange;
+  points?: ValueRange;
 }
 
 export type MinorOpenTwoNTOption = 'forcing' | 'inv';
 
 export interface TwoClubOpenings {
-  points: PointRange;
+  points: ValueRange;
   options: TwoClubOpenOption[];
   describe?: string;
   responses?: string;
@@ -349,7 +345,7 @@ export interface TwoClubTwoDiamondResponse {
 export type TwoClubTwoDiamondOption = 'neg' | 'waiting';
 
 export interface TwoLevelSuitOpenings {
-  points: PointRange;
+  points: ValueRange;
   describe?: string;
   responses?: string;
   rebids?: string;
@@ -406,7 +402,7 @@ export interface SpecialDoublesCardShowing {
 
 
 export interface NoTrumpOvercallDirectConvention {
-  points: PointRange;
+  points: ValueRange;
   options: NoTrumpOvercallDirectOption[];
   description?: string;
 }
@@ -414,7 +410,7 @@ export interface NoTrumpOvercallDirectConvention {
 export type NoTrumpOvercallDirectOption = 'systems-on' | 'conv';
 
 export interface NoTrumpOvercallBalancing {
-  points: PointRange;
+  points: ValueRange;
   jumpTo2NT: NoTrumpOvercallBalancingOption[];
   description?: string;
 }

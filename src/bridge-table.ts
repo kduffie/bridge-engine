@@ -1,6 +1,6 @@
 import { BidWithSeat } from "./bid";
 import { Board } from "./board";
-import { BoardContext, FinalBoardContext, getPartnerBySeat, getSeatFollowing, Partnership, randomlySelect, Seat, SEATS, VULNERABILITIES } from "./common";
+import { BoardContext, FinalBoardContext, getPartnerBySeat, getSeatFollowing, getSeatPreceding, Partnership, randomlySelect, Seat, SEATS, VULNERABILITIES } from "./common";
 import { ContractAssigner, defaultContractAssigner } from "./contract-assigner";
 import { BridgePlayer, BridgePlayerBase, IBridgePlayer } from "./bridge-player";
 import * as assert from 'assert';
@@ -38,7 +38,7 @@ export class BridgeTable {
   }
 
   get players(): Map<Seat, IBridgePlayer> {
-    return this._players
+    return this._players;
   }
 
   get board(): BoardContext | null {
@@ -77,6 +77,8 @@ export class BridgeTable {
         this._players.set('W', players[1]);
         players[1].seat = 'W';
         break;
+      default:
+        throw new Error("Unexpected Partnership");
     }
   }
 
@@ -113,8 +115,12 @@ export class BridgeTable {
         const bidder = this._players.get(bidderSeat)!;
         const bid = await bidder.bid(board, board.getHand(bidderSeat));
         const fullBid = new BidWithSeat(bidderSeat, bid.type, bid.type === 'normal' ? bid.count : undefined, bid.type === 'normal' ? bid.strain : undefined);
-        assert(board.isLegalFollowing(fullBid), "Illegal bid: " + fullBid.toString());
+        assert(board.isLegalFollowing(fullBid), `Illegal bid: ${fullBid.toString()}`);
         board.bid(fullBid);
+        this._players.get(getSeatFollowing(bidderSeat))!.onBidFromRHO(board, fullBid);
+        this._players.get(getPartnerBySeat(bidderSeat))!.onBidFromPartner(board, fullBid);
+        this._players.get(getSeatPreceding(bidderSeat))!.onBidFromLHO(board, fullBid);
+        board.checkForCompletion();
       }
     }
     if (board.status === 'play') {

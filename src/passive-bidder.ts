@@ -2,7 +2,7 @@ import { Hand } from "./hand";
 import { BidContext, BoardContext, Seat } from "./common";
 import { ConventionCard, SimpleConventionCard } from "./convention-card";
 import { BridgeBidder } from "./bridge-player";
-import { Bid } from "./bid";
+import { Bid, BidWithSeat } from "./bid";
 import * as assert from 'assert';
 import { Contract } from "./contract";
 
@@ -36,6 +36,13 @@ export class PassiveBidder implements BridgeBidder {
     // noop
   }
 
+  async onBidFromLHO(context: BidContext, bid: BidWithSeat): Promise<void> {
+  }
+  async onBidFromPartner(context: BidContext, bid: BidWithSeat): Promise<void> {
+  }
+  async onBidFromRHO(context: BidContext, bid: BidWithSeat): Promise<void> {
+  }
+
   async bid(context: BidContext, hand: Hand): Promise<Bid> {
     return new Bid('pass');
   }
@@ -43,5 +50,4 @@ export class PassiveBidder implements BridgeBidder {
   async finalizeContract(context: BidContext, contract: Contract | null): Promise<void> {
     // noop
   }
-
 }

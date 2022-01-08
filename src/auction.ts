@@ -1,15 +1,23 @@
 import { Bid, BidWithSeat } from "./bid";
-import { getPartnerBySeat, Seat, SEATS } from "./common";
+import { getPartnerBySeat, Seat, SEATS, Vulnerability } from "./common";
+import { Contract } from "./contract";
+// eslint-disable-next-line no-undef
 const pad = require('utils-pad-string');
 
 export class Auction {
   private _bids: BidWithSeat[];
+  private _vulnerability: Vulnerability;
 
-  constructor(bids: BidWithSeat[]) {
+  constructor(vulnerability: Vulnerability, bids: BidWithSeat[]) {
+    this._vulnerability = vulnerability;
     this._bids = bids;
   }
   get bids(): BidWithSeat[] {
     return [...this._bids];
+  }
+
+  get vulnerability(): Vulnerability {
+    return this._vulnerability;
   }
 
   getOpeningBid(): BidWithSeat | null {
@@ -80,6 +88,8 @@ export class Auction {
           return lastBid.count >= 4;
         case 'N':
           return lastBid.count >= 3;
+        default:
+          throw new Error("Unhandled strain");
       }
     } else {
       return false;
@@ -107,6 +117,43 @@ export class Auction {
     return null;
   }
 
+  get currentContract(): Contract | null {
+    const last = this.lastNormalBid;
+    if (!last) {
+      return null;
+    }
+    let isVulnerable = false;
+    switch (this.vulnerability) {
+      case 'NS':
+        if (last.by === 'N' || last.by === 'S') {
+          isVulnerable = true;
+        }
+        break;
+      case 'EW':
+        if (last.by === 'E' || last.by === 'W') {
+          isVulnerable = true;
+        }
+        break;
+      case 'both':
+        isVulnerable = true;
+        break;
+      case 'none':
+        break;
+      default:
+        throw new Error("Unhandled vulnerability");
+    }
+    for (let i = 0; i < this.bids.length; i++) {
+      if (this._bids[this.bids.length - 1 - i].type === 'double') {
+        return new Contract(last.by, last.count, last.strain, isVulnerable, 'doubled');
+      } else if (this._bids[this.bids.length - 1 - i].type === 'redouble') {
+        return new Contract(last.by, last.count, last.strain, isVulnerable, 'redoubled');
+      } else if (this._bids[this.bids.length - 1 - i].type === 'normal') {
+        return new Contract(last.by, last.count, last.strain, isVulnerable, 'none');
+      }
+    }
+    return null;
+  }
+
   toString(): string {
     if (this._bids.length === 0) {
       return 'No bids';
@@ -114,7 +161,7 @@ export class Auction {
     const rows: string[] = [];
     rows.push(`       N     E     S     W`);
     let column = SEATS.indexOf(this._bids[0].by);
-    let row = '    '
+    let row = '    ';
     for (let i = 0; i < column; i++) {
       row += pad(' ', 6);
     }
@@ -137,10 +184,10 @@ export class Auction {
   center(value: string, width: number): string {
     let result = value;
     let left = true;
-    while (value.length < width) {
-      value = left ? ' ' + value : value + ' ';
+    while (result.length < width) {
+      result = left ? ` ${result}` : `${result} `;
       left = !left;
     }
-    return value;
+    return result;
   }
 }

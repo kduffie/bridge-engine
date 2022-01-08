@@ -8,7 +8,7 @@ export class Card {
   private _rank: CardRank;
   private _suit: Suit;
   constructor(rank: CardRank, suit: Suit) {
-    this._suit = suit
+    this._suit = suit;
     this._rank = rank;
   }
 
@@ -59,10 +59,10 @@ export class Card {
         case '9':
           return new Card('9', suit);
         default:
-          throw new Error("Unexpected card " + name);
+          throw new Error(`Unexpected card ${name}`);
       }
     } else {
-      throw new Error("Unrecognized card " + name);
+      throw new Error(`Unrecognized card ${name}`);
     }
   }
 
@@ -89,9 +89,7 @@ export class Card {
       return CARD_RANKS.indexOf(this.rank) > CARD_RANKS.indexOf(other.rank);
     } else if (trump === 'N') {
       return false;
-    } else {
-      return this.suit === trump;
     }
+    return this.suit === trump;
   }
-
 }

@@ -157,6 +157,8 @@ export class PartnershipStats {
         case 'C':
           this._minorGameDeclarerBoards.processBoard(board, true);
           break;
+        default:
+          throw new Error("Unexpected strain");
       }
     } else {
       this._partScoreDeclarerBoards.processBoard(board, true);
@@ -193,6 +195,8 @@ export class PartnershipStats {
         case 'C':
           this._minorGameDefenderBoards.processBoard(board, false);
           break;
+        default:
+          throw new Error("Unexpected strain");
       }
     } else {
       this._partScoreDefenderBoards.processBoard(board, false);
@@ -209,7 +213,7 @@ export class PartnershipStats {
 
   toString(): string {
     const rows: string[] = [];
-    rows.push('Partnership Stats: ' + this.partnership + '\n');
+    rows.push(`Partnership Stats: ${this.partnership}\n`);
     rows.push(SituationalStats.headingString());
     for (const situation of this.getSituations()) {
       rows.push(situation.toString(this._allBoards.boards));
