@@ -10,7 +10,7 @@ import { Contract } from "../contract";
 // that usually come close to what Standard American bidding would produce with the same hands.
 
 // The bidding system works like this:
-// Opening Bids:  
+// Opening Bids:
 //    - with flat distribution, based on HCP, bid 1NT, 2NT, or 3NT
 //    - with a 5+ card suit, based on total points, bid 1, 2, or 3 of your suit
 //    - otherwise, with 13+ total points, bid longest minor suit
@@ -70,10 +70,10 @@ export class BbsBidder implements BridgeBidder {
     let result: Bid | null = null;
     const myBids = context.auction.getBidsBySeat(this.seat, true);
     const partnerBids = context.auction.getBidsBySeat(getPartnerBySeat(this.seat), false);
-    if (myBids.length === 0 && (partnerBids.length === 0 || (partnerBids.length === 1 && partnerBids[0].type === 'pass'))) {
+    if (myBids.length === 0 && (partnerBids.length === 0 || partnerBids.length === 1 && partnerBids[0].type === 'pass')) {
       // First opportunity to bid when partner has not yet bid, or has passed
       result = this.getOpeningBid(context, hand);
-    } else if ((myBids.length === 0 || (myBids.length === 1 && myBids[0].type === 'pass')) && partnerBids.length === 1 && partnerBids[0].type === 'normal') {
+    } else if ((myBids.length === 0 || myBids.length === 1 && myBids[0].type === 'pass') && partnerBids.length === 1 && partnerBids[0].type === 'normal') {
       // I haven't bid or passed, so partner's non-pass will be treated as an effective opening bid.  I will respond.
       result = this.getFirstResponse(context, hand, partnerBids[0]);
     } else if (myBids.length === 1 && myBids[0].type === 'normal' && partnerBids.length > 0 && partnerBids[partnerBids.length - 1].type === 'normal') {
@@ -94,7 +94,7 @@ export class BbsBidder implements BridgeBidder {
     const bestMajor = hand.allCards.getBestMajorSuit('prefer-higher');
     const bestMinor = hand.allCards.getBestMinorSuit('prefer-lower');
     const bestSuit = hand.allCards.getBestSuit();
-    if (hand.allCards.highCardPoints >= 23 && hand.allCards.hasNtDistribution() && hand.allCards.getWellStoppedSuits().size == 4) {
+    if (hand.allCards.highCardPoints >= 23 && hand.allCards.hasNtDistribution() && hand.allCards.getWellStoppedSuits().size === 4) {
       return new Bid('normal', 3, 'N');
     } else if (hand.allCards.totalPoints >= 25 && bestMajor.length >= 7) {
       return new Bid('normal', 4, bestMajor.suit);
@@ -110,9 +110,8 @@ export class BbsBidder implements BridgeBidder {
         return new Bid('normal', 3, preferredSuit.suit);
       } else if (hand.allCards.totalPoints >= 16) {
         return new Bid('normal', 2, preferredSuit.suit);
-      } else {
-        return new Bid('normal', 1, preferredSuit.suit);
       }
+      return new Bid('normal', 1, preferredSuit.suit);
     } else if (hand.allCards.totalPoints >= 13) {
       return new Bid('normal', 1, bestSuit.suit);
     }
@@ -120,7 +119,7 @@ export class BbsBidder implements BridgeBidder {
   }
 
   private getFirstResponse(context: BidContext, hand: Hand, opening: BidWithSeat): Bid {
-    if (opening.isGameBonusApplicable()) {
+    if (opening.isGameBonusApplicable(context.auction.currentContract?.doubling || 'none')) {
       return new Bid('pass');
     }
     switch (opening.strain) {
@@ -132,6 +131,8 @@ export class BbsBidder implements BridgeBidder {
       case 'C':
       case 'D':
         return this.getFirstResponseToMinor(context, hand, opening);
+      default:
+        throw new Error('Unexpected strain');
     }
   }
 
@@ -140,11 +141,10 @@ export class BbsBidder implements BridgeBidder {
     const combined = partnerMinHCP + hand.allCards.highCardPoints;
     if (combined >= 24) {
       return new Bid('normal', 3, 'N');
-    } else {
-      const bestSuit = hand.allCards.getBestSuit();
-      if (bestSuit.length >= 6) {
-        return new Bid('normal', 3, bestSuit.suit);
-      }
+    }
+    const bestSuit = hand.allCards.getBestSuit();
+    if (bestSuit.length >= 6) {
+      return new Bid('normal', 3, bestSuit.suit);
     }
     return new Bid('pass');
   }
@@ -152,7 +152,7 @@ export class BbsBidder implements BridgeBidder {
   private getFirstResponseToMajor(context: BidContext, hand: Hand, opening: BidWithSeat): Bid {
     assert(opening.strain !== 'N');
     const mySuit = hand.allCards.getSuit(opening.strain);
-    const partnerMinTotal = opening.count === 3 ? 19 : (opening.count === 2 ? 16 : 13);
+    const partnerMinTotal = opening.count === 3 ? 19 : opening.count === 2 ? 16 : 13;
     const combinedPoints = partnerMinTotal + hand.allCards.totalPoints;
     const combinedHCP = partnerMinTotal + hand.allCards.highCardPoints;
     if (mySuit.length >= 3 && combinedPoints >= 24) {
@@ -165,15 +165,14 @@ export class BbsBidder implements BridgeBidder {
 
   private getFirstResponseToMinor(context: BidContext, hand: Hand, opening: BidWithSeat): Bid {
     assert(opening.strain !== 'N');
-    const partnerMinTotal = opening.count === 3 ? 19 : (opening.count === 2 ? 16 : 13);
+    const partnerMinTotal = opening.count === 3 ? 19 : opening.count === 2 ? 16 : 13;
     const combined = partnerMinTotal + hand.allCards.totalPoints;
     if (combined >= 24) {
       const bestMajor = hand.allCards.getBestMajorSuit('prefer-lower');
       if (bestMajor.length >= 5) {
         return new Bid('normal', 3, bestMajor.suit);
-      } else {
-        return new Bid('normal', 3, 'N');
       }
+      return new Bid('normal', 3, 'N');
     }
     return new Bid('pass');
   }
@@ -189,6 +188,8 @@ export class BbsBidder implements BridgeBidder {
       case 'C':
       case 'D':
         return this.getSubsequentResponseInMinor(context, hand, partnersResponse, myOpening);
+      default:
+        break;
     }
     return new Bid('pass');
   }
@@ -208,6 +209,8 @@ export class BbsBidder implements BridgeBidder {
           return new Bid('normal', 3, 'N');
         }
         break;
+      default:
+        throw new Error("Unexpected strain");
     }
     return new Bid('pass');
   }
@@ -219,9 +222,10 @@ export class BbsBidder implements BridgeBidder {
       case 'S':
         if (mySuit.length >= 3) {
           return new Bid('normal', 4, partnersResponse.strain);
-        } else {
-          return new Bid('normal', 3, 'N');
         }
+        return new Bid('normal', 3, 'N');
+      default:
+        break;
     }
     return new Bid('pass');
   }

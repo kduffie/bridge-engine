@@ -4,6 +4,7 @@ import { BridgeTable } from "../bridge-table";
 import { BasicCardPlayer } from "../robots/basic-player";
 import { BbsBidder } from "../robots/bbs-bidder";
 import { BridgePlayer } from "../bridge-player";
+import * as console from 'console';
 
 // This sample shows how to create a bridge table, assign players, run 24 boards, then display stats
 

@@ -88,6 +88,16 @@ export function isMajor(strain: Strain): boolean {
   }
 }
 
+export function isMinor(strain: Strain): boolean {
+  switch (strain) {
+    case 'C':
+    case 'D':
+      return true;
+    default:
+      return false;
+  }
+}
+
 export function getPartnershipBySeat(seat: Seat): Partnership {
   switch (seat) {
     case 'N':
@@ -288,7 +298,3 @@ export function getVulnerabilityForPartnership(vulnerability: Vulnerability, par
 
 export type RelativeVulnerability = 'neutral-vulnerable' | 'neutral-non-vulnerable' | 'favorable' | 'unfavorable';
 
-export interface ValueRange {
-  from: number;
-  to: number;
-}

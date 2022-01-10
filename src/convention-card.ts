@@ -1,4 +1,4 @@
-import { ValueRange } from "./common";
+import { ValueRange } from "./value-range";
 export class SimpleConventionCard implements ConventionCard {
   private _approach: OverallApproach;
   constructor(approach: OverallApproach) {

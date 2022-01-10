@@ -2,10 +2,44 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "TwoClubs",
+      "name": "Sample",
       "type": "node",
       "request": "launch",
       "program": "${workspaceRoot}/src/run/sample.ts",
+      "smartStep": true,
+      "stopOnEntry": false,
+      "args": [
+        "-c",
+        "${workspaceRoot}/config.json",
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "internalConsole",
+      "outFiles": [
+        "${workspaceRoot}/**/*.js"
+      ],
+      "protocol": "auto",
+      "skipFiles": [
+        // "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/lib/**/*.js",
+        "<node_internals>/**/*.js",
+        "<node_internals>/**",
+        "<node_internals>/internal/async_hooks.js"
+      ]
+    },
+    {
+      "name": "BiddingAnalyzer",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/src/analysis/bidding-tests.ts",
       "smartStep": true,
       "stopOnEntry": false,
       "args": [

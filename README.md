@@ -154,35 +154,121 @@ constructing the player:
 const player = new BridgePlayer(new BbsBidder(), new BasicCardPlayer());
 ```
 
-## Beginner Bidding System
+## Bidding Analyzer
 
+For building various tools, including robots, it can be very useful to have something that analyzes
+a bidding sequence.  This library includes a full framework for bidding analysis, including 
+pluggable bid interpreters so support for different conventions and bidding systems can be
+constructed easily.
 
-This simplified system was designed for humans that are just 
-starting to play bridge.  Bid selection is essentially mechanical, and therefore also allows for
-a very simple robotic implementation which is provided.  After analyzing many hands, this system
-does a surprisingly good job of arriving at a reasonable contract, especially since this implementation
-contains fewer than 200 lines of Typescript.
+To use the bidding analyzer:
 
-The bidding system works like this:
+```typescript
+const analyzer = new BiddingAnalyzer('none', 'N', STANDARD_CONVENTION_FACTORIES);
+await analyzer.onBid(new BidWithSeatch('N', 'normal', 1, 'C'));
+...
+console.log(analyzer.toString());
+```
 
-### Opening Bids:  
- - with flat distribution, based on HCP, bid 1NT, 2NT, or 3NT
- - with a 5+ card suit, based on total points, bid 1, 2, or 3 of your suit
- - otherwise, with 13+ total points, bid longest minor suit
-### Initial Responses:
-- in response to NT, with sufficient combined HCP, bid 3NT, or with a 6+ card suit, bid 3 of that suit, otherwise pass
-- in response to a major with a fit, and sufficient combined total points, bid game
-- in response to a major without a fit, and sufficient combined HCP, bid 3NT
-- in response to a minor holding a 5+ card major and sufficient combined total points, bid 3 of the major
-- in response to a minor without a 5+ card major but sufficient combined HCP, bid 3NT
-- otherwise pass
-### Subsequent Response:
-- after opening in NT and a response of 3 of a major, if you have 2+ cards in that suit, bid game in that suit
-- after opening in NT and a response of 3 of a minor, if you have 3+ cards in that suit, bid 3NT
-- after opening a minor suit and a response of 3 of a major, if you have 3+ cards in that major, bid game in that suit, otherwise 3NT
-### Overcalls:
-- For all bids (including opening), if there is interference, proceed with bid from above unless it is insufficient, in which case you will pass
-- Note:  You might worry that opponents can easily defeat this system with simple interference.  But because bids 
-tend to be as large as feasible, opponents don't often get "free bids" without risking penalties.
+You construct a new BiddingAnalyzer for each hand to be analyzed, passing in the vulnerability (none, both, or a specific partnership), the dealer seat (North in this example), and a list of bidding interpreter 
+factories.  After that, you provide it with a sequence of bids using its **onBid** method.  The analyzer
+instance has several methods and properties that can be reviewed at any point in the process.  For convenience, the **toString** method will provide a readable version of all of the summary information.  For example:
 
+```text
+Bidding Analyzer:     Dealer: North     Vulnerability: none
+Bids:
+     1C by N  std-simple-suit-opens           forcing:no         hand => points: 13-21   C: 2+        D: 0-3       H: 0-4       S: 0-4     Simple opening bid
+   pass by E  no interpretations
+     1S by S  std-simple-suit-open-responses  forcing:yes        hand => points: 6+      C: ?         D: ?         H: 0-5       S: 4+*     4+ spades
+   pass by W  no interpretations
+     2S by N  std-offense-logical             forcing:no         hand => points: 13-15   C: 2+        D: 0-3       H: 0-4       S: 4*      Rebid partner's suit, forcing: fit, minimum
+   pass by E  no interpretations
+     4S by S  std-offense-logical             forcing:none       hand => points: 11-16   C: ?         D: ?         H: 0-5       S: 4+*     Game
+   pass by W  no interpretations
+   pass by N  std-offense-logical             forcing:no         hand => points: 13-15   C: 2+        D: 0-3       H: 0-4       S: 4*      Accept game contract
+   pass by E  no interpretations
+Partnership: NS    fits: S      forcing: none    offense-passed
+  North      points: 13-15   C: 2+        D: 0-3       H: 0-4       S: 4*     
+  South      points: 11-16   C: ?         D: ?         H: 0-5       S: 4+*    
+Partnership: EW    fits: none   forcing: none    unknown
+  East       points: ?       C: ?         D: ?         H: ?         S: ?      
+  West       points: ?       C: ?         D: ?         H: ?         S: ?   
+```
+
+Each bid is listed in order along with an analysis of what that bidder probably intended based on the interpreters available.  Following the bids is an analysis of the state
+of each partnership, and each member of that partnership.  (All of this information is, of course, accessible via code.)
+
+The BiddingAnalyzer is a simple framework and most of the intelligence is contained in the bidding interpreter classes.  When you construct the BiddingAnalyzer, you pass in
+an array of interpreter factories.  This allows for extensibility.  You can mix and match interpreters that you want to use.  The analyzer will call all interpreters for
+every bid, giving each a chance to provide zero, one, or multiple interpretations of that bid.  The analyzer combines these interpretations and then moves on.  If more than
+one interpreter provides an interpretation for the same bid, there is no problem as long as subsequent interpretations are not confused by this ambiguity.  The analyzer will
+keep these multiple interpretations.  But for the sake of summarization, it will combine interpretations of the same bid by broadening distribution and point ranges as broadly
+as is needed.  Likewise, if there are no interpretations of a bid, that is also okay.  The analyzer will simply report that no interpretations are available and the estimate
+of that hand will remain unchanged.
+
+To help keep interpreters simple, the bidding analyzer maintains a bidding "state" for each partnership.  After each bid, the state of that partnership is updated based on
+the interpretation of that bid.  If there are multiple interpretations, then the partnership may temporarily have two different states until the ambiguity is resolved.
+These states are intended to facilitate interpreters into different aspects of bidding.  Typically one interpreter will handle all of the bids related to one state (or a few).  
+For example, one of the states is "simple-suit-opens" and another is "stayman".  So you can "plug in" support for a new convention by adding an interpreter that understands
+that convention.  An interpreter should, for that reason, only interpret bids that it "understands" and return no interpretations for bids that it does not.
+
+Our intention is that the list of defined is exhaustive for all bidding conventions.  However, anticipating that something will inevitably be missed, there is a special
+bidding state called "special".  If a new interpreter handles a convention that involves a sequence of artificial bids and is not one of the named states, it can detect
+the beginning of that sequence and update the state to "special".  When the sequence has completed, it will typically reset the state to the appropriate state, such as 
+"offense-logical".
+
+For example, a simplified interpreter that handles 2-club opens might look like this:
+
+```typescript
+export class TwoClubOpenBidInterpreter extends BiddingInterpreterBase {
+  constructor() {
+    super('std-2c-opens', 'Std: 2c opens');
+  }
+
+  async interpret(context: BiddingAnalyzer): Promise<BidInterpretation[]> {
+    const result: BidInterpretation[] = [];
+    if (context.partnership.hasState('no-bids') && !context.openingBid) {
+      if (context.bid.type === 'normal' && context.bid.count === 2 && context.bid.strain === 'C') {
+        const interpretation = new BidInterpretation(this.id, `2C open: 22+ HCP or 9 tricks`, context.hand.estimate);
+        interpretation.updateState('opening-2c');
+        interpretation.force = '4-bids';
+        interpretation.handEstimate.points.addBounds(22, null);
+        result.push(interpretation);
+      }
+    } else if (context.partnership.hasState('opening-2c') && context.bid.count === 2 && context.bid.strain === 'D') {
+        const interpretation1 = new BidInterpretation(this.id, `2D: waiting, 0-7 points`, context.hand.estimate);
+        interpretation1.updateState('offense-logical');
+        interpretation1.handEstimate.points.addBounds(null, 7);
+        result.push(interpretation1);
+
+        const interpretation2 = new BidInterpretation(this.id, `2D: waiting, no 5+ card suit`, context.hand.estimate);
+        interpretation.updateState('offense-logical');
+        interpretation.handEstimate.points.addBounds(8, null);
+        interpretation.handEstimate.addSuitBounds('C', null, 4);
+        interpretation.handEstimate.addSuitBounds('D', null, 4);
+        interpretation.handEstimate.addSuitBounds('H', null, 4);
+        interpretation.handEstimate.addSuitBounds('S', null, 4);
+        result.push(interpretation);
+    } ...
+  }
+}
+```
+
+In this example, we check to see if the partnership is in the "no-bids" state, meaning an opening bid (or overcall) 
+has not been made by this partnership, and we check that there has not been an opening bid by anyone.
+
+Then we check to see if the current bid is 2C.  If so, we return an interpretation indicating the point count, and
+that this is forcing for 4 bids ("2 round forcing").  The state is updated to "opening-2c", so that this interpreter
+can spot the next response that is coming.
+
+The "else" clause will then come into play on the partner's next bid, where the state will be "opening-2c" and the
+bid is 2D.  (To complete this interpreter, it should also handle cases involving interference and other bids by partner.)
+In this case, two different interpretations of this 2D bid are provided.  In one interpretation, the partner has too 
+few points to provide any bid other than 2D.  In the other interpretation, the bidder has sufficient strength (8+ points)
+but has no 5-card suit.  
+
+Bridge players will recognize that some partnerships play 2C opens differently -- perhaps always using waiting bids.
+That is why each convention card may combine different bid interpreters.  The interpreter factories might include
+a different class to handle 2C opens, or perhaps the interpreter could be parameterized to tell it how the partnership
+chooses to handle 2C responses.
 

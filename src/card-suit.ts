@@ -92,10 +92,18 @@ export class CardSuit {
     let result = 0;
     switch (this.length) {
       case 2:
-        result += 1;
+        if ((this.includes('Q') || this.includes('J')) && !this.includes('A') && !this.includes('K')) {
+          // don't include extra distribution points
+        } else {
+          result += 1;
+        }
         break;
       case 1:
-        result += 2;
+        if (this.includes('K') || this.includes('Q') || this.includes('J')) {
+          // don't include extra distribution points
+        } else {
+          result += 2;
+        }
         break;
       case 0:
         result += 3;

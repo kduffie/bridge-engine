@@ -1,4 +1,4 @@
-import { BidType, CARD_RANKS, MAX_CONTRACT_SIZE, Seat, Strain, STRAINS } from "./common";
+import { BidType, CARD_RANKS, Doubling, MAX_CONTRACT_SIZE, Seat, Strain, STRAINS } from "./common";
 import * as assert from 'assert';
 
 export const BID_PATTERN = /^(pass)|(dbl)|rdbl?|([1-7](c|d|h|s|nt?))$/i;
@@ -97,29 +97,39 @@ export class Bid {
     if (bid.type !== 'normal' && this.type === 'normal') {
       return true;
     }
+    if (this.type === 'pass') {
+      return true;
+    }
     if (this.type !== 'normal') {
       return false;
     }
     return this.count > bid.count || this.count === bid.count && STRAINS.indexOf(this.strain) > STRAINS.indexOf(bid.strain);
   }
 
-  isGameBonusApplicable(): boolean {
+  isGameBonusApplicable(doubling: Doubling): boolean {
     if (this.type === 'normal') {
       switch (this.strain) {
         case 'C':
         case 'D':
-          return this.count >= 5;
+          return this.count >= 5 || this.count >= 3 && doubling === 'doubled' || this.count >= 2 && doubling === 'redoubled';
         case 'H':
         case 'S':
-          return this.count >= 4;
+          return this.count >= 4 || this.count >= 2 && doubling === 'doubled' || this.count >= 1 && doubling === 'redoubled';
         case 'N':
-          return this.count >= 3;
+          return this.count >= 3 || this.count >= 2 && doubling === 'doubled' || this.count >= 1 && doubling === 'redoubled';
         default:
           throw new Error("Unhandled strain");
       }
     } else {
       return false;
     }
+  }
+
+  isSlamBonusApplicable(): boolean {
+    if (this.type === 'normal') {
+      return this.count >= 6;
+    }
+    return false;
   }
 
 
