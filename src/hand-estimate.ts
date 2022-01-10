@@ -115,8 +115,8 @@ export class HandEstimate {
     const dist: string[] = [];
     for (const suit of SUITS) {
       const d = this._suits.get(suit)!;
-      dist.push(sprintf('%-10s', `${suit}: ${d.toString()}${this.hasStopper(suit) ? '*' : ''}`));
+      dist.push(sprintf('%-6s', `${suit}: ${d.toString()}${this.hasStopper(suit) ? '*' : ''}`));
     }
-    return sprintf('points: %-5s   %s', this._points.toString(), dist.join('   '));
+    return sprintf('pts: %-5s   %s', this._points.toString(), dist.join('   '));
   }
 }
