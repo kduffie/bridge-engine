@@ -177,22 +177,22 @@ instance has several methods and properties that can be reviewed at any point in
 ```text
 Bidding Analyzer:     Dealer: North     Vulnerability: none
 Bids:
-     1C by N  std-simple-suit-opens           forcing:no     pts: 13-21   C: 2+    D: 0-3   H: 0-4   S: 0-4 Simple opening bid
+     1C by N  std-simple-suit-opens           forcing:no     pts:13-21   C:2+   D:0-3  H:0-4  S:0-4  Simple opening bid
    pass by E  no interpretations
-     1S by S  std-simple-suit-open-responses  forcing:yes    pts: 6+      C: ?     D: ?     H: 0-5   S: 4+* 4+ spades
+     1S by S  std-simple-suit-open-responses  forcing:yes    pts:6+      C:?    D:?    H:0-5  S:4+*  4+ spades
    pass by W  no interpretations
-     2S by N  std-offense-logical             forcing:no     pts: 13-15   C: 2+    D: 0-3   H: 0-4   S: 4*  Rebid partner's suit, forcing: fit, minimum
+     2S by N  std-offense-logical             forcing:no     pts:13-15   C:2+   D:0-3  H:0-4  S:4*   Rebid partner's suit, forcing: fit, minimum
    pass by E  no interpretations
-     4S by S  std-offense-logical             forcing:none   pts: 11-16   C: ?     D: ?     H: 0-5   S: 4+* Game
+     4S by S  std-offense-logical             forcing:no     pts:11-16   C:?    D:?    H:0-5  S:4+*  Game
    pass by W  no interpretations
-   pass by N  std-offense-logical             forcing:no     pts: 13-15   C: 2+    D: 0-3   H: 0-4   S: 4*  Accept game contract
+   pass by N  std-offense-logical             forcing:no     pts:13-15   C:2+   D:0-3  H:0-4  S:4*   Accept game contract
    pass by E  no interpretations
-Partnership: NS    fits: S      forcing: none    offense-passed
-  North      pts: 13-15   C: 2+    D: 0-3   H: 0-4   S: 4* 
-  South      pts: 11-16   C: ?     D: ?     H: 0-5   S: 4+*
-Partnership: EW    fits: none   forcing: none    unknown
-  East       pts: ?       C: ?     D: ?     H: ?     S: ?  
-  West       pts: ?       C: ?     D: ?     H: ?     S: ?
+Partnership: NS    fits: S      forcing: no      offense-passed
+  North      pts:13-15   C:2+   D:0-3  H:0-4  S:4*  
+  South      pts:11-16   C:?    D:?    H:0-5  S:4+* 
+Partnership: EW    fits: none   forcing: no      unknown
+  East       pts:?       C:?    D:?    H:?    S:?   
+  West       pts:?       C:?    D:?    H:?    S:?  
 ```
 
 Each bid is listed in order along with an analysis of what that bidder probably intended based on the interpreters available.  Following the bids is an analysis of the state

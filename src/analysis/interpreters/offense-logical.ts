@@ -105,7 +105,7 @@ export class OffenseLogicalBidInterpreter extends BiddingInterpreterBase {
   private interpretSlamBid(context: BiddingAnalyzer, interpretations: BidInterpretation[]): void {
     const partnerPoints = context.partnerHand.estimate.points.from || 0;
     const interpretation = new BidInterpretation(this.id, 'Slam bid', context.hand.estimate);
-    interpretation.force = 'none';
+    interpretation.force = 'no';
     if (context.bid.strain !== 'N') {
       interpretation.handEstimate.addSuitBounds(context.bid.strain, 8 - (context.partnerHand.estimate.getSuitCount(context.bid.strain).from || 0), null);
     }
@@ -114,10 +114,10 @@ export class OffenseLogicalBidInterpreter extends BiddingInterpreterBase {
   }
 
   private interpretSlamInvitation(context: BiddingAnalyzer, interpretations: BidInterpretation[]): void {
-    if (context.partnership.force === 'none') {
+    if (context.partnership.force === 'no') {
       const partnerPoints = context.partnerHand.estimate.points.from || 0;
       const interpretation = new BidInterpretation(this.id, 'Slam invitation', context.hand.estimate);
-      interpretation.force = 'none';
+      interpretation.force = 'no';
       if (context.bid.strain !== 'N') {
         interpretation.handEstimate.addSuitBounds(context.bid.strain, 8 - (context.partnerHand.estimate.getSuitCount(context.bid.strain).from || 0), null);
       }
@@ -130,7 +130,7 @@ export class OffenseLogicalBidInterpreter extends BiddingInterpreterBase {
     // TODO: check for jump to game, suggesting fewer points
     const partnerPoints = context.partnerHand.estimate.points.from || 0;
     const interpretation = new BidInterpretation(this.id, 'Game', context.hand.estimate);
-    interpretation.force = 'none';
+    interpretation.force = 'no';
     if (context.bid.strain !== 'N') {
       interpretation.handEstimate.addSuitBounds(context.bid.strain, 8 - (context.partnerHand.estimate.getSuitCount(context.bid.strain).from || 0), null);
     }
@@ -140,7 +140,7 @@ export class OffenseLogicalBidInterpreter extends BiddingInterpreterBase {
 
   private interpretNTBid(context: BiddingAnalyzer, interpretations: BidInterpretation[]): void {
     const partnerPoints = context.partnerHand.estimate.points.from || 0;
-    if (context.partnership.force === 'none') {
+    if (context.partnership.force === 'no') {
       // non-forcing suggesting that a NT bid is invitational to game
       const interpretation = new BidInterpretation(this.id, 'Invitation to game', context.hand.estimate);
       interpretation.handEstimate.points.addBounds(25 - partnerPoints, null);
@@ -186,7 +186,7 @@ export class OffenseLogicalBidInterpreter extends BiddingInterpreterBase {
     assert(context.lastNormalBid);
     const sufficient = Bid.createSufficient(context.lastNormalBid.bid, context.bid.strain);
     if (sufficient && context.bid.count === sufficient.count) {
-      if (context.partnership.force === 'none') {
+      if (context.partnership.force === 'no') {
         const interpretation = new BidInterpretation(this.id, 'Rebid suit, non-forcing: extra length', context.hand.estimate);
         interpretation.handEstimate.points.addBounds((context.hand.estimate.points.from || 0) + 2, (context.hand.estimate.points.from || 0) + 5);
         if (context.bid.count <= 3) {
@@ -208,7 +208,7 @@ export class OffenseLogicalBidInterpreter extends BiddingInterpreterBase {
     assert(context.lastNormalBid);
     const sufficient = Bid.createSufficient(context.lastNormalBid.bid, context.bid.strain);
     if (sufficient && context.bid.count === sufficient.count) {
-      if (context.partnership.force === 'none') {
+      if (context.partnership.force === 'no') {
         const interpretation = new BidInterpretation(this.id, 'Bid partner\'s suit, non-forcing: fit', context.hand.estimate);
         interpretation.handEstimate.points.addBounds((context.hand.estimate.points.from || 0) + 2, (context.hand.estimate.points.from || 0) + 5);
         const cards = context.partnerHand.estimate.getSuitCount(context.bid.strain).from || 4;

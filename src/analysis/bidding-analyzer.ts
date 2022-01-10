@@ -182,8 +182,8 @@ export class BiddingAnalyzer {
       }
       switch (this.partnership.force) {
         case 'yes':
-        case 'none':
-          this.partnership.force = 'none';
+        case 'no':
+          this.partnership.force = 'no';
           break;
         case '2-bids':
           this.partnership.force = 'yes';

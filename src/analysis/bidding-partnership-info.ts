@@ -9,7 +9,7 @@ import { BiddingSeatInfo2 } from "./bidding-seat-info";
 export class BiddingPartnershipInfo2 {
   partnership: Partnership;
   lastBid: BidWithInterpretations | null = null;
-  force: ForceType = 'none';
+  force: ForceType = 'no';
   slamInvitation = false;
   private _majors: Strain[] = [];
   gameReached = false;

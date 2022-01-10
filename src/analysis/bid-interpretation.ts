@@ -2,7 +2,7 @@ import { HandEstimate } from "../hand-estimate";
 import { sprintf } from "sprintf-js";
 import { PartnershipState } from "./bidding-analyzer";
 
-export type ForceType = 'none' | 'yes' | '2-bids' | '3-bids' | '4-bids' | 'game';
+export type ForceType = 'no' | 'yes' | '2-bids' | '3-bids' | '4-bids' | 'game';
 
 export class BidInterpretation {
   private _interpreter: string;
@@ -75,6 +75,6 @@ export class BidInterpretation {
   }
 
   toString(): string {
-    return sprintf('%-30s  forcing:%-6s %-10s %s', this._interpreter, this._forcing || 'no', this._hand.toString(), this._description);
+    return sprintf('%-30s  forcing:%-6s %-25s %s', this._interpreter, this._forcing || 'no', this._hand.toString(), this._description);
   }
 }

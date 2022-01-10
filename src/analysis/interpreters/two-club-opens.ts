@@ -72,7 +72,7 @@ export class TwoClubOpenBidInterpreter extends BiddingInterpreterBase {
       } else if (context.bid.type === 'normal' && context.bid.count === 3 && context.bid.strain === 'N') {
         const interpretation = new BidInterpretation(this.id, 'Opener has NT distribution with at least game in hand', context.hand.estimate);
         interpretation.updateState('offense-logical');
-        interpretation.force = 'none';
+        interpretation.force = 'no';
         interpretation.slamInvitation = true;
         interpretation.handEstimate.points.addBounds(25, null);
         result.push(interpretation);
