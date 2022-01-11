@@ -178,21 +178,21 @@ instance has several methods and properties that can be reviewed at any point in
 Bidding Analyzer:     Dealer: North     Vulnerability: none
 Bids:
      1C by N  forcing:no     pts:13-21   C:2+   D:0-3  H:0-4  S:0-4  Simple opening bid (std-simple-suit-opens)
-   pass by E  no interpretations
+   pass by E  ?         
      1S by S  forcing:yes    pts:6+      C:?    D:?    H:0-5  S:4+*  4+ spades (std-simple-suit-open-responses)
-   pass by W  no interpretations
+   pass by W  ?         
      2S by N  forcing:no     pts:13-15   C:2+   D:0-3  H:0-4  S:4*   Rebid partner's suit, forcing: fit, minimum (std-offense-logical)
-   pass by E  no interpretations
+   pass by E  ?         
      4S by S  forcing:no     pts:11-16   C:?    D:?    H:0-5  S:4+*  Game (std-offense-logical)
-   pass by W  no interpretations
+   pass by W  ?         
    pass by N  forcing:no     pts:13-15   C:2+   D:0-3  H:0-4  S:4*   Accept game contract (std-offense-logical)
-   pass by E  no interpretations
+   pass by E  ?         
 Partnership: NS    fits: S      forcing: no      offense-passed
   North      pts:13-15   C:2+   D:0-3  H:0-4  S:4*  
   South      pts:11-16   C:?    D:?    H:0-5  S:4+* 
 Partnership: EW    fits: none   forcing: no      unknown
   East       pts:?       C:?    D:?    H:?    S:?   
-  West       pts:?       C:?    D:?    H:?    S:?  
+  West       pts:?       C:?    D:?    H:?    S:? 
 ```
 
 Each bid is listed in order along with an analysis of what that bidder probably intended based on the interpreters available.  Following the bids is an analysis of the state

@@ -53,7 +53,7 @@ export class BidWithInterpretations {
 
   toString(): string {
     if (this._interpretations.length === 0) {
-      return sprintf('  %10s  %-10s', this._bid.toString(true), 'no interpretations');
+      return sprintf('  %10s  %-10s', this._bid.toString(true), '?');
     }
     const result: string[] = [];
     result.push(sprintf('  %10s  %-10s', this._bid.toString(true), this._interpretations[0].toString()));
