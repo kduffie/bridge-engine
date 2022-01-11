@@ -220,7 +220,6 @@ export class BiddingAnalyzer {
     const result: string[] = [];
     result.push(`Bidding Analyzer:     Dealer: ${getSeatName(this.dealer)}     Vulnerability: ${this.vulnerability}`);
     if (this._bidsWithInterpretation.length > 0) {
-      result.push('Bids:');
       for (const bid of this._bidsWithInterpretation) {
         result.push(bid.toString());
       }

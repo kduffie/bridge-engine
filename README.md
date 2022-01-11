@@ -176,25 +176,24 @@ instance has several methods and properties that can be reviewed at any point in
 
 ```text
 Bidding Analyzer:     Dealer: North     Vulnerability: none
-Bids:
-     1C by N                 pts:13-21   C:2+   D:0-3  H:0-4  S:0-4  Simple opening bid (std-simple-suit-opens)
-   pass by E                 pts:0-12    C:?    D:?    H:?    S:?    No suitable overcall (std-initial-pass)
-     1H by S forcing:yes     pts:6+      C:?    D:?    H:4+*  S:?    4+ hearts, hearts longer than spades (std-simple-suit-open-responses)
-   pass by W                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
-     1S by N forcing:yes     pts:13-21   C:2+   D:0-3  H:0-4  S:4*   New suit at 1-level: 4 cards (std-offense-logical)
-   pass by E                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
-     2S by S                 pts:6-8     C:?    D:?    H:4+*  S:4+*  Rebid partner's suit, forcing: fit, minimum (std-offense-logical)
-   pass by W                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
-     4S by N                 pts:18-21   C:2+   D:0-3  H:0-4  S:4*   Game (std-offense-logical)
-   pass by E                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
-   pass by S                 pts:6-8     C:?    D:?    H:4+*  S:4+*  Accept game contract (std-offense-logical)
-   pass by W                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
+    1C by N                 pts:13-21   C:2+   D:0-3  H:0-4  S:0-4  Simple opening bid (std-simple-suit-opens)
+  pass by E                 pts:0-12    C:?    D:?    H:?    S:?    No suitable overcall (std-initial-pass)
+    1H by S forcing:yes     pts:6+      C:?    D:?    H:4+*  S:?    4+ hearts, hearts longer than spades (std-simple-suit-open-responses)
+  pass by W                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
+    1S by N forcing:yes     pts:13-21   C:2+   D:0-3  H:0-4  S:4*   New suit at 1-level: 4 cards (std-offense-logical)
+  pass by E                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
+    2S by S                 pts:6-8     C:?    D:?    H:4+*  S:4+*  Rebid partner's suit, forcing: fit, minimum (std-offense-logical)
+  pass by W                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
+    4S by N                 pts:18-21   C:2+   D:0-3  H:0-4  S:4*   Game (std-offense-logical)
+  pass by E                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
+  pass by S                 pts:6-8     C:?    D:?    H:4+*  S:4+*  Accept game contract (std-offense-logical)
+  pass by W                 pts:0-12    C:?    D:?    H:?    S:?    No suitable bid (std-defense-logical)
 Partnership: NS    fits: S                       offense-passed
   North      pts:18-21   C:2+   D:0-3  H:0-4  S:4*  
   South      pts:6-8     C:?    D:?    H:4+*  S:4+* 
 Partnership: EW    fits: none                    defense-logical
   East       pts:0-12    C:?    D:?    H:?    S:?   
-  West       pts:0-12    C:?    D:?    H:?    S:? 
+  West       pts:0-12    C:?    D:?    H:?    S:?   
 ```
 
 Each bid is listed in order along with an analysis of what that bidder probably intended based on the interpreters available.  Following the bids is an analysis of the state
