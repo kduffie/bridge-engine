@@ -73,7 +73,7 @@ export class BiddingPartnershipInfo2 {
   toString(): string {
     const result: string[] = [];
     const fits = this.fits;
-    result.push(sprintf('Partnership: %-5s fits: %-6s forcing: %-7s %s', this.partnership, fits.length > 0 ? fits.join(',') : 'none', this.force || 'no', this.states.join('|')));
+    result.push(sprintf('Partnership: %-5s fits: %-6s %-16s %s', this.partnership, fits.length > 0 ? fits.join(',') : 'none', this.force && this.force !== 'no' ? `forcing:${this.force}` : '', this.states.join('|')));
     for (const s of this.seats.values()) {
       result.push(`  ${s.toString()}`);
     }

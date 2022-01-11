@@ -56,9 +56,9 @@ export class BidWithInterpretations {
       return sprintf('  %10s  %-10s', this._bid.toString(true), '?');
     }
     const result: string[] = [];
-    result.push(sprintf('  %10s  %-10s', this._bid.toString(true), this._interpretations[0].toString()));
+    result.push(sprintf('  %10s %-10s', this._bid.toString(true), this._interpretations[0].toString()));
     for (let i = 1; i < this._interpretations.length; i++) {
-      result.push(sprintf('      %10s  %-10s', 'OR:', this._interpretations[i].toString()));
+      result.push(sprintf('      %10s %-10s', 'OR:', this._interpretations[i].toString()));
     }
     return result.join('\n');
   }

@@ -75,6 +75,6 @@ export class BidInterpretation {
   }
 
   toString(): string {
-    return sprintf('forcing:%-6s %s %s (%s)', this._forcing || 'no', this._hand.toString(), this._description, this._interpreter);
+    return sprintf('%-15s %s %s (%s)', this._forcing && this._forcing !== 'no' ? `forcing:${this._forcing}` : '', this._hand.toString(), this._description, this._interpreter);
   }
 }

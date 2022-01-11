@@ -28,6 +28,12 @@ export class InitialPassBidInterpreter extends BiddingInterpreterBase {
           result.push(interpretation2);
         }
       }
+    } else if (context.partnership.hasState('no-bids') && context.openingBid) {
+      const interpretation = new BidInterpretation(this.id, 'No suitable overcall', context.hand.estimate);
+      interpretation.updateState('defense-logical');
+      interpretation.handEstimate.points.addBounds(null, 12);
+      // TODO: consider other interpretation with points but no suit
+      result.push(interpretation);
     }
     return result;
   }

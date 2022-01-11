@@ -1,4 +1,5 @@
 import { BiddingInterpreterFactory } from "../bidding-analyzer";
+import { DefenseLogicalBidInterpreter } from "./defense-logical";
 import { InitialPassBidInterpreter } from "./initial-pass";
 import { NTOpenResponseBidInterpreter } from "./nt-open-responses";
 import { NTOpenBidInterpreter } from "./nt-opens";
@@ -21,6 +22,7 @@ export const NATURAL_OFFENSE_FACTORIES: BiddingInterpreterFactory[] = [
   () => new PreemptOpenResponseBidInterpreter(),
   () => new OffenseLogicalBidInterpreter(),
   () => new OffensePassesBidInterpreter(),
+  () => new DefenseLogicalBidInterpreter(),
 ];
 
 export const NATURAL_DEFENSE_FACTORIES: BiddingInterpreterFactory[] = [
